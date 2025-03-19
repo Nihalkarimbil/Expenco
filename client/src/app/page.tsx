@@ -1,9 +1,11 @@
 
+import Landing from "@/components/landing/home";
+
 
 export default function Home() {
   return (
     <div>
-      <h1>Home Page</h1>
+      <Landing/>
       
     </div>
   );
