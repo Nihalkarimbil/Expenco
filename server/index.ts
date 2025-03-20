@@ -1,39 +1,45 @@
 import express from "express";
-import { Request, Response } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import errorHandler from "./src/middleware/errorhandler";
 import cors from "cors";
 import authRouter from "./src/routes/authrouter";
+import errorHandler from "./src/middleware/errorhandler";
+import ExpenceRoute from "./src/routes/expenceRoute";
+import budgetroute from "./src/routes/budgetrout";
 
-dotenv.config();
+dotenv.config(); 
 
-const server = express();
+const app = express();
+
+app.use(
+  cors({
+    origin: "http://localhost:3000", 
+    credentials: true, 
+    allowedHeaders: ["Content-Type", "Authorization"], 
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  })
+);
+
+app.use(express.json());
+
+app.use("/api/auth",authRouter);
+app.use("/api/exp",ExpenceRoute)
+app.use("/api/budg",budgetroute)
+app.use(errorHandler);
 
 
-const corsOptions = {
-    origin: process.env.FRONTENT_URI,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization', "X-MongoDb-Id"],
-    credentials: true,
-};
-server.use(express.json());
-server.use(errorHandler);
-server.use(cors(corsOptions));
-server.use("/auth", authRouter);
 
+if (!process.env.MONGO_URI) {
+  throw new Error("MONGO_URI is not defined in environment variables.");
+}
 
 
 mongoose
-  .connect(process.env.MONGO_URI as string)
-  .then(() => {
-    console.log("Connected to database");
-  })
-  .catch((err) => {
-    console.log("Error connecting to database", err);
-  });
-const PORT: number = 5000;
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("Connected to database"))
+  .catch((err) => console.error("Error connecting to database", err));
 
-server.listen(PORT, () => {
-  console.log("Server is running on port 5000");
+const PORT=5000;
+app.listen(PORT, () => {
+  console.log(` Server is running on port ${PORT}`);
 });
