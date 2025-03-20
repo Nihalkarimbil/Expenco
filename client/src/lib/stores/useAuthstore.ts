@@ -12,14 +12,18 @@ interface AuthState {
     user: User | null;
     loading: boolean;
     error: string | null;
+    isSucces: boolean;
     registeruser: (newuser: User) => Promise<void>;
     loginUser: (credentials: { email: string; password: string }) => Promise<void>;
+    logout: () => void;
+    checkAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-    user: null,
+    user: JSON.parse(localStorage.getItem("user") || "null"),
     loading: false,
     error: null,
+    isSucces: false,
 
     registeruser: async (newuser: User) => {
         set({ loading: true, error: null });
@@ -29,10 +33,11 @@ export const useAuthStore = create<AuthState>((set) => ({
             const { user, token, refreshtoken } = response.data.data;
             Cookies.set("token", token);
             Cookies.set("refreshtoken", refreshtoken);
-            set({ user, loading: false });
+            localStorage.setItem("user", JSON.stringify(user));
+            set({ user, loading: false, isSucces: true });
         } catch (error) {
             console.error("Error registering user:", error);
-            set({ error: "Registration failed", loading: false });
+            set({ error: "Registration failed", loading: false, isSucces: false });
         }
     },
 
@@ -44,10 +49,25 @@ export const useAuthStore = create<AuthState>((set) => ({
             const { user, token, refreshtoken } = response.data.data;
             Cookies.set("token", token);
             Cookies.set("refreshtoken", refreshtoken);
-            set({ user, loading: false });
+            localStorage.setItem("user", JSON.stringify(user)); // Persist user
+            set({ user, loading: false, isSucces: true });
         } catch (error) {
             console.error("Error logging in:", error);
-            set({ error: "Login failed. Please check your credentials.", loading: false });
+            set({ error: "Login failed. Please check your credentials.", loading: false, isSucces: false });
+        }
+    },
+
+    logout: () => {
+        Cookies.remove("token");
+        Cookies.remove("refreshtoken");
+        localStorage.removeItem("user");
+        set({ user: null, isSucces: false });
+    },
+
+    checkAuth: () => {
+        const user = JSON.parse(localStorage.getItem("user") || "null");
+        if (user) {
+            set({ user, isSucces: true });
         }
     }
 }));

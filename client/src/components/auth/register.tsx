@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import { userSchema } from "@/lib/schema/validation";
 import { useAuthStore } from "@/lib/stores/useAuthstore";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const initialValues = {
   username: "",
@@ -130,6 +131,10 @@ function Register() {
           >
             {loading ? "Submitting..." : "Submit"}
           </button>
+          <Link href={"/login"}>
+         
+         <h1 className="text-center mt-3 text-blue-400">you have an account login!</h1>
+         </Link>
         </form>
 
         {error && <div className="text-red-500 text-sm mt-3">{error}</div>}
