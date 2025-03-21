@@ -2,72 +2,83 @@ import axiosInstance from "@/services/api";
 import { create } from "zustand";
 import Cookies from "js-cookie";
 
-interface User {
-    username?: string;
-    email: string;
-    password: string;
+export interface User {
+  _id: string;
+  username?: string;
+  email: string;
+  password: string;
 }
 
 interface AuthState {
-    user: User | null;
-    loading: boolean;
-    error: string | null;
-    isSucces: boolean;
-    registeruser: (newuser: User) => Promise<void>;
-    loginUser: (credentials: { email: string; password: string }) => Promise<void>;
-    logout: () => void;
-    checkAuth: () => void;
+  user: User | null;
+  loading: boolean;
+  error: string | null;
+  isSucces: boolean;
+  registeruser: (newuser: User) => Promise<void>;
+  loginUser: (credentials: {
+    email: string;
+    password: string;
+  }) => Promise<void>;
+  logout: () => void;
+  checkAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-    user: JSON.parse(localStorage.getItem("user") || "null"),
-    loading: false,
-    error: null,
-    isSucces: false,
+  user: JSON.parse(localStorage.getItem("user") || "null"),
+  loading: false,
+  error: null,
+  isSucces: false,
 
-    registeruser: async (newuser: User) => {
-        set({ loading: true, error: null });
+  registeruser: async (newuser: User) => {
+    set({ loading: true, error: null });
 
-        try {
-            const response = await axiosInstance.post("/auth/register", newuser);
-            const { user, token, refreshtoken } = response.data.data;
-            Cookies.set("token", token);
-            Cookies.set("refreshtoken", refreshtoken);
-            localStorage.setItem("user", JSON.stringify(user));
-            set({ user, loading: false, isSucces: true });
-        } catch (error) {
-            console.error("Error registering user:", error);
-            set({ error: "Registration failed", loading: false, isSucces: false });
-        }
-    },
-
-    loginUser: async ({ email, password }) => {
-        set({ loading: true, error: null });
-
-        try {
-            const response = await axiosInstance.post("/auth/login", { email, password });
-            const { user, token, refreshtoken } = response.data.data;
-            Cookies.set("token", token);
-            Cookies.set("refreshtoken", refreshtoken);
-            localStorage.setItem("user", JSON.stringify(user)); // Persist user
-            set({ user, loading: false, isSucces: true });
-        } catch (error) {
-            console.error("Error logging in:", error);
-            set({ error: "Login failed. Please check your credentials.", loading: false, isSucces: false });
-        }
-    },
-
-    logout: () => {
-        Cookies.remove("token");
-        Cookies.remove("refreshtoken");
-        localStorage.removeItem("user");
-        set({ user: null, isSucces: false });
-    },
-
-    checkAuth: () => {
-        const user = JSON.parse(localStorage.getItem("user") || "null");
-        if (user) {
-            set({ user, isSucces: true });
-        }
+    try {
+      const response = await axiosInstance.post("/auth/register", newuser);
+      const { user, token, refreshtoken } = response.data.data;
+      Cookies.set("token", token);
+      Cookies.set("refreshtoken", refreshtoken);
+      localStorage.setItem("user", JSON.stringify(user));
+      set({ user, loading: false, isSucces: true });
+    } catch (error) {
+      console.error("Error registering user:", error);
+      set({ error: "Registration failed", loading: false, isSucces: false });
     }
+  },
+
+  loginUser: async ({ email, password }) => {
+    set({ loading: true, error: null });
+
+    try {
+      const response = await axiosInstance.post("/auth/login", {
+        email,
+        password,
+      });
+      const { user, token, refreshtoken } = response.data.data;
+      Cookies.set("token", token);
+      Cookies.set("refreshtoken", refreshtoken);
+      localStorage.setItem("user", JSON.stringify(user)); // Persist user
+      set({ user, loading: false, isSucces: true });
+    } catch (error) {
+      console.error("Error logging in:", error);
+      set({
+        error: "Login failed. Please check your credentials.",
+        loading: false,
+        isSucces: false,
+      });
+    }
+  },
+
+  logout: () => {
+    Cookies.remove("token");
+    Cookies.remove("refreshtoken");
+    localStorage.removeItem("user");
+    set({ user: null, isSucces: false });
+  },
+
+  checkAuth: () => {
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    if (user) {
+      set({ user, isSucces: true });
+    }
+  },
 }));

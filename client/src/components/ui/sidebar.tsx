@@ -1,23 +1,24 @@
 "use client"
 
 import { useAuthStore } from '@/lib/stores/useAuthstore';
+import Link from 'next/link';
 import React, { useState } from 'react';
 
 function Sidebar() {
   const [activeItem, setActiveItem] = useState('dashboard');
   const {user}=useAuthStore()
-  console.log(user);
+ 
   
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'grid' },
-    { id: 'expenses', label: 'Expenses', icon: 'dollar-sign' },
-    { id: 'budget', label: 'Budget', icon: 'pie-chart' },
-    { id: 'reports', label: 'Reports', icon: 'bar-chart-2' },
+    { id: 'dashboard', label: 'Dashboard', icon: 'grid' ,path:"/dashbord"},
+    { id: 'expenses', label: 'Expenses', icon: 'dollar-sign' ,path:"/expence"},
+    { id: 'budget', label: 'Budget', icon: 'pie-chart' ,path:"/budget"},
+    { id: 'reports', label: 'Reports', icon: 'bar-chart-2',path:"/report" },
     
   ];
 
   return (
-    <div className="h-screen bg-white text-blue-500 w-64 flex flex-col shadow-2xl">
+    <div className="h-screen bg-white text-blue-500 w-64 flex flex-col shadow-2xl fixed">
     
       <div className="p-4 border-b border-blue-700">
         <div className="flex items-center space-x-2">
@@ -44,7 +45,9 @@ function Sidebar() {
       <nav className="flex-grow p-4">
         <ul className="space-y-2">
           {navItems.map((item) => (
-            <li key={item.id}>
+            <Link key={item.id} href={item.path}>
+            
+            <li >
               <button
                 onClick={() => setActiveItem(item.id)}
                 className={`w-full flex items-center space-x-3 p-3 rounded-md transition-colors ${
@@ -60,7 +63,9 @@ function Sidebar() {
                 
               </button>
             </li>
+            </Link>
           ))}
+         
         </ul>
       </nav>
 

@@ -13,7 +13,7 @@ interface ExpenceType extends Document {
 const expenceschema: Schema<ExpenceType> = new Schema({
     user: { type: mongoose.Schema.ObjectId, ref: "User", required: true },
     amount: { type: Number, required: true },
-    category: { type: String, required: true, enum: ["Food", "Transport", "Rent", "Entertainment", "Business", "Other"] },
+    category: { type: String, required: true, enum: ["Food", "Transport", "Rent", "Entertainment", "Business","Shopping", "Other"] },
     paymentMethord: { type: String, enum: ["Cash", "Card", "UPI", "Bank Transfer"], required: true },
     note: { type: String },
     isDeleted: { type: Boolean, default: false },

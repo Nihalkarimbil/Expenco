@@ -9,6 +9,8 @@ export const addExpence = async (
     next: NextFunction
 ) => {
     const { user, amount, category, paymentMethord, note } = req.body;
+    console.log(req.body);
+    
     if (!amount || !category || !paymentMethord) {
         return next(new CustomError("all are requires", 400));
     }
@@ -117,6 +119,7 @@ export const totalexp = async (req: Request, res: Response, next: NextFunction):
         return next(new CustomError("error on agregate", 400))
     }
 
+    
     res.status(200).json({
         data:totalExpense,
         error:false,
