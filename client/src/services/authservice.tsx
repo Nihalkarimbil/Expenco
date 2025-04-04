@@ -4,13 +4,6 @@ import axiosInstance from "./api";
 
 
 
-
-
-
-
-
-
-
 const gettall =async()=>{
     const {data}=await axiosInstance.get("/auth/alluser");
     return data;

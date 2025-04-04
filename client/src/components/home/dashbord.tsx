@@ -20,11 +20,16 @@ import {
   BarChart,
 } from "@mui/x-charts";
 import { Expenses } from "@/lib/stores/useExpence";
+import { useGetBudget } from "@/lib/stores/useBudgetStore";
 
 function Dashboard() {
   const { user } = useAuthStore();
   const { data: totalamount } = useGetTotalExpense(user?._id);
   const { data: expences, isLoading } = useGetExpenses(user?._id);
+  const currentMonth = new Date().getMonth() + 1;
+  const {data:budgets}=useGetBudget(user?._id,currentMonth)
+  console.log("budg",budgets);
+  
   console.log(expences);
   if (isLoading) {
     return <div>loding</div>;
@@ -167,7 +172,7 @@ function Dashboard() {
                   fontWeight="bold"
                   my={1}
                 >
-                  ${budget}
+                  ${budgets.amount}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   {((totalexp / budget) * 100).toFixed(0)}% of budget used

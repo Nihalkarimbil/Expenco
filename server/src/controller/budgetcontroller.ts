@@ -4,145 +4,161 @@ import CustomError from "../utils/CustomError";
 import Expence from "../model/expence";
 
 export const addBudget = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
-    const { user, category, amount, month, year } = req.body;
-    const existingbudget = await Budget.findOne({ user: user, month, year });
-    if (existingbudget) {
-        return next(new CustomError("budget alrady exist", 400));
-    }
-    const newBudget = new Budget({
-        user,
-        category,
-        amount,
-        month,
-        year,
-    });
+  console.log("sssssss", req.body);
 
+  const { user, category, amount, month, year } = req.body;
+  const existingbudget = await Budget.findOne({ month: month });
+  if (existingbudget) {
+    return next(new CustomError("budget existing in this month", 400));
+  } else {
+    const newBudget = new Budget({
+      user,
+      category,
+      amount,
+      month,
+      year,
+    });
     await newBudget.save();
 
     res.status(201).json({
-        message: "budget added for this month",
-        data: newBudget,
-        error: false,
+      message: "budget added for this month",
+      data: newBudget,
+      error: false,
     });
+  }
 };
 
 export const getmonthlyBudget = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ): Promise<void> => {
-    const { id } = req.params;
+  const { id } = req.params;
+  const { month, year } = req.query;
+
+
+  if (!month || !year) {
+    return next(new CustomError("Month and year are required", 400));
+  }
+
+  const budget = await Budget.findOne({
+    user: id,
+    month: Number(month),
+    year: Number(year),
+  });
+
+  if (!budget) {
+    return next(new CustomError("No budget found for this month", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: budget,
+  });
+};
+
+export const compareBudget = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { userId } = req.params;
     const { month, year } = req.query;
 
-    console.log(req.query);
-    console.log(id);
-
     if (!month || !year) {
-        return next(new CustomError("Month and year are required", 400));
+      return next(new CustomError("Month and year are required", 400));
     }
 
     const budget = await Budget.findOne({
-        user: id,
-        month: Number(month),
-        year: Number(year),
+      user: userId,
+      month: Number(month),
+      year: Number(year),
     });
 
     if (!budget) {
-        return next(new CustomError("No budget found for this month", 404));
+      res.status(404).json({
+        success: false,
+        message: "No budget found for this period",
+      });
+      return;
     }
 
+    const totalExpense = await Expence.aggregate([
+      {
+        $match: {
+          user: userId,
+          isDeleted: false,
+          $expr: {
+            $and: [
+              { $eq: [{ $month: "$createdAt" }, Number(month)] },
+              { $eq: [{ $year: "$createdAt" }, Number(year)] },
+            ],
+          },
+        },
+      },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]);
+
+    const expenseTotal = totalExpense.length > 0 ? totalExpense[0].total : 0;
+    const remainingBudget = Number(budget.amount) - expenseTotal;
+
     res.status(200).json({
-        success: true,
-        data: budget,
+      success: true,
+      budget: budget.amount,
+      expenses: expenseTotal,
+      remainingBudget,
+      message: remainingBudget >= 0 ? "Within budget" : "Budget exceeded!",
     });
+  } catch (error) {
+    next(error);
+  }
 };
 
-export const compareBudget = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const { userId } = req.params;
-        const { month, year } = req.query;
+export const updateBudget = async (req: Request, res: Response) => {
+  const { userId } = req.params;
+  const { amount, month, year } = req.body;
 
-        if (!month || !year) {
-            return next(new CustomError("Month and year are required", 400));
-        }
+  const budget = await Budget.findOneAndUpdate(
+    { user: userId, month, year },
+    { $set: { amount } },
+    { new: true }
+  );
 
-        const budget = await Budget.findOne({
-            user: userId,
-            month: Number(month),
-            year: Number(year),
-        });
+  if (!budget) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Budget not found" });
+  }
 
-        if (!budget) {
-            res.status(404).json({
-                success: false,
-                message: "No budget found for this period",
-            });
-            return;
-        }
-
-        const totalExpense = await Expence.aggregate([
-            {
-                $match: {
-                    user: userId, isDeleted: false, $expr: {
-                        $and: [
-                            { $eq: [{ $month: "$createdAt" }, Number(month)] },
-                            { $eq: [{ $year: "$createdAt" }, Number(year)] },
-                        ],
-                    },
-                },
-            },
-            { $group: { _id: null, total: { $sum: "$amount" }, }, },
-        ]);
-
-        const expenseTotal = totalExpense.length > 0 ? totalExpense[0].total : 0;
-        const remainingBudget = Number(budget.amount) - expenseTotal;
-
-        res.status(200).json({
-            success: true,
-            budget: budget.amount,
-            expenses: expenseTotal,
-            remainingBudget,
-            message: remainingBudget >= 0 ? "Within budget" : "Budget exceeded!",
-        });
-    } catch (error) {
-        next(error);
-    }
+  res.status(200).json({
+    success: true,
+    data: budget,
+    message: "Budget updated successfully",
+  });
 };
 
-export const updateBudget=async(req:Request,res:Response)=>{
-    const { userId } = req.params;
-    const { amount, month, year } = req.body;
+export const deletebuget = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const deletebudge = await Budget.findByIdAndUpdate(
+    req.params.id,
+    { isDeleted: true },
+    { new: true }
+  );
+  if (!deletebudge) {
+    return next(new CustomError("cannot delete this exp", 400));
+  }
 
-    const budget = await Budget.findOneAndUpdate(
-      { user: userId, month, year },
-      { $set: { amount } },
-      { new: true }
-    );
-
-    if (!budget) {
-      return res.status(404).json({ success: false, message: "Budget not found" });
-    }
-
-    res.status(200).json({ success: true, data: budget, message: "Budget updated successfully" });
-}
-
-export const deletebuget = async (req: Request, res: Response, next: NextFunction) => {
-    const deletebudge = await Budget.findByIdAndUpdate(
-        req.params.id,
-        { isDeleted: true },
-        { new: true },
-    )
-    if (!deletebudge) {
-        return next(new CustomError("cannot delete this exp", 400))
-    }
-
-    res.status(200).json({
-        data: deletebudge,
-        message: "expence deleted",
-        error: false
-    })
-}
+  res.status(200).json({
+    data: deletebudge,
+    message: "expence deleted",
+    error: false,
+  });
+};

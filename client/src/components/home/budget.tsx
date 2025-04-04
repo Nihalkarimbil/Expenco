@@ -1,25 +1,24 @@
 "use client";
 import { Button, TextField } from "@mui/material";
 import React, { useState } from "react";
-import { useExpencestore, useGetExpenses } from "@/lib/stores/useExpence";
 import { useAuthStore } from "@/lib/stores/useAuthstore";
+import { useBudgetStore } from "@/lib/stores/useBudgetStore";
 
 function Budget() {
-  const { addexpences, error } = useExpencestore();
   const { user } = useAuthStore();
-  const { data: expenses, refetch } = useGetExpenses(user?._id);
+  const { addBudget } = useBudgetStore();
 
-  const [expenseData, setExpenseData] = useState({
+  const [Budjet, setBudgetData] = useState({
     category: "",
     amount: 0,
-    month:0,
-    year:0,
-
+    month: 0,
+    year: 2025,
   });
+  console.log(Budjet);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setExpenseData((prevData) => ({
+    setBudgetData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
@@ -27,24 +26,38 @@ function Budget() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+    const { amount, category, month, year } = Budjet;
+    await addBudget({
+      user: user?._id ?? null,
+      amount,
+      category,
+      month,
+      year,
+    });
 
-   
+    setTimeout(() => {
+      if (useBudgetStore.getState().isSucces) {
+        alert("Expense added successfully");
+        setBudgetData({
+          category: "",
+          amount: 0,
+          month: 0,
+          year: 2025,
+        });
+      }
+    }, 100);
   };
 
   return (
     <div>
       <div className="bg-blue-50 p-10 rounded-3xl h-[600px] overflow-auto scrollbar-none">
         <div className="flex justify-between mx-auto px-2">
-          <h1 className="text-2xl font-bold text-blue-500">
-            Monthly Budget
-          </h1>
+          <h1 className="text-2xl font-bold text-blue-500">Monthly Budget</h1>
           <Button variant="contained" color="primary">
             Add Budget
           </Button>
         </div>
 
-        {/* Form Section */}
         <div className="bg-white mt-10 p-10 rounded-xl shadow-sm">
           <h2 className="text-xl font-semibold mb-6 text-blue-400">
             Enter Budget Details
@@ -55,7 +68,7 @@ function Budget() {
                 label="Amount"
                 name="amount"
                 type="number"
-                value={expenseData.amount}
+                value={Budjet.amount}
                 onChange={handleChange}
                 fullWidth
                 required
@@ -65,10 +78,9 @@ function Budget() {
                 }}
               />
               <TextField
-                label="Date"
+                label="Month"
                 name="month"
-                type="date"
-                value={expenseData.month}
+                value={Budjet.month}
                 onChange={handleChange}
                 fullWidth
                 required
@@ -77,9 +89,19 @@ function Budget() {
                 }}
               />
               <TextField
-                label="Expense Title"
-                name="note"
-                value={expenseData.year}
+                label="Year"
+                name="year"
+                value={Budjet.year}
+                onChange={handleChange}
+                fullWidth
+                required
+                placeholder="e.g. Grocery shopping"
+              />
+              <TextField
+                label="Category"
+                name="category"
+                type="text"
+                value={Budjet.category}
                 onChange={handleChange}
                 fullWidth
                 required
@@ -87,31 +109,28 @@ function Budget() {
               />
             </div>
 
-           
-
             <div className="mt-8 flex justify-end gap-6">
               <Button
                 variant="outlined"
                 color="secondary"
                 onClick={() =>
-                  setExpenseData({
-                    amount:0,
-                
-
+                  setBudgetData({
+                    amount: 0,
+                    category: "",
+                    year: 0,
+                    month: 0,
                   })
                 }
               >
                 Cancel
               </Button>
               <Button variant="contained" color="primary" type="submit">
-                Save Expense
+                add Budget
               </Button>
             </div>
           </form>
-          {error && <h1 className="text-red-400">{error}</h1>}
+          {/* {error && <h1 className="text-red-400">{error}</h1>} */}
         </div>
-
-        
       </div>
     </div>
   );
