@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import Budget from "../model/budget";
 import CustomError from "../utils/CustomError";
 import Expence from "../model/expence";
+import { error } from "console";
 
 export const addBudget = async (
   req: Request,
@@ -39,7 +40,6 @@ export const getmonthlyBudget = async (
 ): Promise<void> => {
   const { id } = req.params;
   const { month, year } = req.query;
-
 
   if (!month || !year) {
     return next(new CustomError("Month and year are required", 400));
@@ -119,6 +119,7 @@ export const compareBudget = async (
   }
 };
 
+
 export const updateBudget = async (req: Request, res: Response) => {
   const { userId } = req.params;
   const { amount, month, year } = req.body;
@@ -160,5 +161,27 @@ export const deletebuget = async (
     data: deletebudge,
     message: "expence deleted",
     error: false,
+  });
+};
+
+export const allBudgets = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const allBudget = await Budget.find({
+    user: req.params.id,
+    isDeleted: false,
+  });
+  console.log(req.params);
+  console.log(allBudget);
+  
+  if (!allBudget) {
+    return next(new CustomError("there is no Budget for This User", 404));
+  }
+  res.status(200).json({
+    error: false,
+    data: allBudget,
+    message: "all budgets of the user",
   });
 };

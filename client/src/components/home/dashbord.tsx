@@ -10,35 +10,33 @@ import {
   Typography,
   Grid,
   Paper,
- 
   Container,
 } from "@mui/material";
 import {
   PieChart,
   pieArcLabelClasses,
   LineChart,
-  BarChart,
 } from "@mui/x-charts";
 import { Expenses } from "@/lib/stores/useExpence";
 import { useGetBudget } from "@/lib/stores/useBudgetStore";
+import Link from "next/link";
 
 function Dashboard() {
   const { user } = useAuthStore();
   const { data: totalamount } = useGetTotalExpense(user?._id);
   const { data: expences, isLoading } = useGetExpenses(user?._id);
   const currentMonth = new Date().getMonth() + 1;
-  const {data:budgets}=useGetBudget(user?._id,currentMonth)
-  console.log("budg",budgets);
-  
+  const { data: budgets } = useGetBudget(user?._id, currentMonth);
+  console.log("budg", budgets);
+
   console.log(expences);
   if (isLoading) {
     return <div>loding</div>;
   }
 
-  const totalexp =
-    totalamount && totalamount[0]?.total ? totalamount[0].total : 0;
-  const budget = 2000;
-  const balance = budget - totalexp;
+  const totalexp = totalamount && totalamount[0]?.total ? totalamount[0].total : 0;
+
+  const balance = Number(budgets?.amount) - totalexp;
 
   const processCategoryData = (): {
     id: number;
@@ -74,16 +72,6 @@ function Dashboard() {
   const monthNames = ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar"];
   const expenseValues = [1200, 1350, 1100, 1500, 1250, totalexp];
 
-  const categories = [
-    "Food",
-    "Transport",
-    "Utilities",
-    "Entertainment",
-    "Shopping",
-    "Others",
-  ];
-  const budgetValues = [500, 350, 300, 250, 400, 200];
-  const actualValues = [450, 300, 250, 200, 350, 150];
 
   const COLORS = [
     "#0088FE",
@@ -97,16 +85,8 @@ function Dashboard() {
   return (
     <Container maxWidth="xl">
       <Box sx={{ flexGrow: 1, py: 4 }}>
-        <Box mb={4}>
-          <Typography
-            variant="h4"
-            component="h1"
-            fontWeight="bold"
-            gutterBottom
-          >
-            Dashboard
-          </Typography>
-          <Typography variant="subtitle1" color="text.secondary">
+        <Box mb={2}>
+          <Typography variant="h4" color="text.secondary">
             Welcome back, {user?.username}
           </Typography>
         </Box>
@@ -135,13 +115,13 @@ function Dashboard() {
                   fontWeight="bold"
                   my={1}
                 >
-                  ${totalexp}
+                  ₹{totalexp}
                 </Typography>
                 <Typography
                   variant="body2"
-                  color={totalexp > budget / 2 ? "error.main" : "success.main"}
+                  color={totalexp >Number(budgets.amount) / 2 ? "error.main" : "success.main"}
                 >
-                  {totalexp > budget / 2
+                  {totalexp >Number(budgets.amount) / 2
                     ? "Warning: High spending"
                     : "Spending on track"}
                 </Typography>
@@ -153,7 +133,7 @@ function Dashboard() {
             <Card
               sx={{
                 borderLeft: 6,
-                borderColor: "success.main",
+                borderColor: "primary.main",
                 height: "100%",
                 boxShadow: 3,
               }}
@@ -166,26 +146,47 @@ function Dashboard() {
                 >
                   Monthly Budget
                 </Typography>
-                <Typography
-                  variant="h4"
-                  component="div"
-                  fontWeight="bold"
-                  my={1}
-                >
-                  ${budgets.amount}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {((totalexp / budget) * 100).toFixed(0)}% of budget used
-                </Typography>
+
+                {budgets ? (
+                  <>
+                    <Typography
+                      variant="h4"
+                      component="div"
+                      fontWeight="bold"
+                      my={1}
+                    >
+                      ₹{budgets.amount}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {((totalexp / Number(budgets.amount)) * 100).toFixed(0)}% of
+                      budget used
+                    </Typography>
+                  </>
+                ) : (
+                  <>
+                    <Typography
+                      variant="h6"
+                      component="div"
+                      fontWeight="medium"
+                      my={1}
+                      color="text.secondary"
+                    >
+                      No budget is available for this month
+                    </Typography>
+                    <Link href={"/budget"}>add Budget</Link>
+                  </>
+                )}
               </CardContent>
+
             </Card>
+
           </Grid>
 
           <Grid item xs={12} md={4}>
             <Card
               sx={{
                 borderLeft: 6,
-                borderColor: "secondary.main",
+                borderColor: "primary.main",
                 height: "100%",
                 boxShadow: 3,
               }}
@@ -205,7 +206,7 @@ function Dashboard() {
                   my={1}
                   color={balance < 0 ? "error.main" : "inherit"}
                 >
-                  ${balance}
+                  ₹{balance}
                 </Typography>
                 <Typography
                   variant="body2"
@@ -213,7 +214,7 @@ function Dashboard() {
                 >
                   {balance < 0
                     ? "Budget exceeded!"
-                    : `${((balance / budget) * 100).toFixed(0)}% remaining`}
+                    : `${((balance / Number(budgets.amount)) * 100).toFixed(0)}% remaining`}
                 </Typography>
               </CardContent>
             </Card>
@@ -306,46 +307,6 @@ function Dashboard() {
             </Paper>
           </Grid>
         </Grid>
-
-        
-
-        <Paper sx={{ p: 3, boxShadow: 2 }}>
-          <Typography variant="h6" fontWeight="medium" gutterBottom>
-            Budget vs. Actual
-          </Typography>
-          <Box sx={{ height: 300, pt: 1 }}>
-            <BarChart
-              xAxis={[
-                {
-                  data: categories,
-                  scaleType: "band",
-                },
-              ]}
-              series={[
-                {
-                  data: budgetValues,
-                  label: "Budget",
-                  valueFormatter: (value) => `$${value}`,
-                  color: "#8884d8",
-                },
-                {
-                  data: actualValues,
-                  label: "Actual",
-                  valueFormatter: (value) => `$${value}`,
-                  color: "#82ca9d",
-                },
-              ]}
-              height={300}
-              margin={{ left: 70, right: 30, top: 50, bottom: 30 }}
-              slotProps={{
-                legend: {
-                  position: { vertical: "top", horizontal: "right" },
-                  hidden: false,
-                },
-              }}
-            />
-          </Box>
-        </Paper>
       </Box>
     </Container>
   );

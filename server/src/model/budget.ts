@@ -5,8 +5,8 @@ interface budgetType extends Document {
     category: string,
     amount: string,
     month:number,
-    year:number
-
+    year:number,
+    isDeleted:boolean
 }
 
 const budgetschema: Schema<budgetType> = new Schema({
@@ -15,6 +15,7 @@ const budgetschema: Schema<budgetType> = new Schema({
     amount:{type:String,required:true},
     month: { type: Number, required: true }, 
     year: { type: Number, required: true }, 
+    isDeleted:{type:Boolean,default:false}
 
 },{timestamps:true})
 

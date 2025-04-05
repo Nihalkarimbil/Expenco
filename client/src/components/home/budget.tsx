@@ -2,11 +2,14 @@
 import { Button, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { useAuthStore } from "@/lib/stores/useAuthstore";
-import { useBudgetStore } from "@/lib/stores/useBudgetStore";
+import { useBudgetStore, useGetAllbudgets } from "@/lib/stores/useBudgetStore";
+import { Budgets as BudgetType } from "@/lib/stores/useBudgetStore";
 
 function Budget() {
   const { user } = useAuthStore();
   const { addBudget } = useBudgetStore();
+  const { data: budgetsData, refetch } = useGetAllbudgets(user?._id);
+  
 
   const [Budjet, setBudgetData] = useState({
     category: "",
@@ -44,9 +47,15 @@ function Budget() {
           month: 0,
           year: 2025,
         });
+        refetch();
       }
     }, 100);
   };
+
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
 
   return (
     <div>
@@ -129,7 +138,35 @@ function Budget() {
               </Button>
             </div>
           </form>
-          {/* {error && <h1 className="text-red-400">{error}</h1>} */}
+        </div>
+        <div className="mt-10">
+          <h2 className="text-xl font-bold text-gray-700 mb-4">My Monthly Budgets</h2>
+          {Array.isArray(budgetsData) && budgetsData.length === 0 ? (
+            <div>No Budget available</div>
+          ) : (
+            <table className="w-full mt-4 border border-gray-200 text-sm">
+              <thead className="bg-blue-100">
+                <tr>
+                  <th className="px-4 py-2 text-left border border-gray-300">Month</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Year</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Category</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Amount</th>
+                  <th className="px-4 py-2 text-left border border-gray-300">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {budgetsData?.map((value: BudgetType, index: number) => (
+                  <tr key={index} className="border-t">
+                    <td className="border border-gray-300 px-4 py-2">{monthNames[value.month-1]}</td>
+                    <td className="border border-gray-300 px-4 py-2">{value.year}</td>
+                    <td className="border border-gray-300 px-4 py-2">{value.category}</td>
+                    <td className="border border-gray-300 px-4 py-2">${value.amount}</td>
+                    <td className="border border-gray-300 px-4 py-2"><Button>edit</Button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>

@@ -61,7 +61,6 @@ function Expence() {
           </Button>
         </div>
 
-        {/* Form Section */}
         <div className="bg-white mt-10 p-10 rounded-xl shadow-sm">
           <h2 className="text-xl font-semibold mb-6 text-blue-400">
             Enter New Expense
@@ -172,7 +171,7 @@ function Expence() {
           {error && <h1 className="text-red-400">{error}</h1>}
         </div>
 
-        {/* Recent Expenses Table */}
+ 
         <div className="bg-white mt-10 p-10 rounded-xl shadow-sm">
           <h2 className="text-xl font-semibold mb-6 text-blue-400">
             Recent Expenses
@@ -197,6 +196,7 @@ function Expence() {
                       <th className="border border-gray-300 px-4 py-2">
                         Payment Method
                       </th>
+                      <th>action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -225,6 +225,9 @@ function Expence() {
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           {expense.paymentMethord}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <Button>edit</Button>
                         </td>
                       </tr>
                     ))}

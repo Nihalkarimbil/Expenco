@@ -1,6 +1,6 @@
 import express from "express"
 import tryCatch from "../middleware/tryCatch"
-import { addBudget, compareBudget, deletebuget, getmonthlyBudget, updateBudget } from "../controller/budgetcontroller"
+import { addBudget, allBudgets, compareBudget, deletebuget, getmonthlyBudget, updateBudget } from "../controller/budgetcontroller"
 
 const budgetroute=express.Router()
 
@@ -10,5 +10,6 @@ budgetroute
     .get("/compare/:userId",tryCatch(compareBudget))
     .put("/updatebudget/:userId",tryCatch(updateBudget))
     .put("/deletebudget/:id",tryCatch(deletebuget))
+    .get("/getBudgetof/:id",tryCatch(allBudgets))
 
 export default budgetroute

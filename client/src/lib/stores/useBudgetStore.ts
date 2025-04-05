@@ -9,6 +9,7 @@ export interface Budgets {
     category: string;
     month: number;
     year: number;
+    isDeleted:boolean
 }
 interface Budget {
     user: string | null;
@@ -58,3 +59,16 @@ export const useGetBudget = (userid: string | undefined, month: number) => {
         staleTime: 1000 * 60 * 5,
     });
 };
+
+
+export const useGetAllbudgets = (user: string | undefined) => {
+    return useQuery({
+        queryKey: ["allBudget"],
+        queryFn: async () => {
+            const resp = await axiosInstance.get(`/budg/getBudgetof/${user}`)
+            console.log(resp.data);
+            return resp.data.data
+        },
+        staleTime: 1000 * 60 * 5
+    })
+}
