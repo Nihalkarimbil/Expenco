@@ -3,12 +3,14 @@ import { Button, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { useExpencestore, useGetExpenses } from "@/lib/stores/useExpence";
 import { useAuthStore } from "@/lib/stores/useAuthstore";
+import Expeditmodal, { expenceData } from "../ui/expeditmodal";
 
 function Expence() {
   const { addexpences, error } = useExpencestore();
+  
+  const [expId, setExpId] = useState<expenceData | null>(null);
   const { user } = useAuthStore();
-  const { data: expenses, refetch } = useGetExpenses(user?._id);
-
+  const { data: expenses, refetch } = useGetExpenses(user?._id);const [isOpen,setIsopen]=useState(false)
   const [expenseData, setExpenseData] = useState({
     note: "",
     amount: 0,
@@ -16,7 +18,10 @@ function Expence() {
     category: "",
     paymentMethord: "",
   });
-
+  const handleopen= (id:expenceData)=>{
+    setIsopen(!isOpen)
+    setExpId(id )
+  }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setExpenseData((prevData) => ({
@@ -227,7 +232,7 @@ function Expence() {
                           {expense.paymentMethord}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
-                          <Button>edit</Button>
+                          <Button onClick={()=>handleopen(expense)}>edit</Button>
                         </td>
                       </tr>
                     ))}
@@ -238,6 +243,10 @@ function Expence() {
           )}
         </div>
       </div>
+      <Expeditmodal  open={isOpen}
+        onClose={() => setIsopen(false)}
+        expenseId={expId}
+        />
     </div>
   );
 }

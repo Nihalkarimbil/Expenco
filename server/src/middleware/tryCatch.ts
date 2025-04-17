@@ -6,6 +6,8 @@ const tryCatch = (fn: Function) => async (req: Request, res: Response, next: Nex
   try {
     await fn(req, res, next);
   } catch (error) {
+    console.log(error);
+    
     next(error);
   }
 };
