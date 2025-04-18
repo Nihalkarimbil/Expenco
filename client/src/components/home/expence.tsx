@@ -10,7 +10,8 @@ function Expence() {
   
   const [expId, setExpId] = useState<expenceData | null>(null);
   const { user } = useAuthStore();
-  const { data: expenses, refetch } = useGetExpenses(user?._id);const [isOpen,setIsopen]=useState(false)
+  const { data: expenses, refetch } = useGetExpenses(user?._id);
+  const [isOpen,setIsopen]=useState(false)
   const [expenseData, setExpenseData] = useState({
     note: "",
     amount: 0,
@@ -20,7 +21,7 @@ function Expence() {
   });
   const handleopen= (id:expenceData)=>{
     setIsopen(!isOpen)
-    setExpId(id )
+    setExpId(id)
   }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
