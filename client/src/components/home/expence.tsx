@@ -6,7 +6,7 @@ import { useAuthStore } from "@/lib/stores/useAuthstore";
 import Expeditmodal, { expenceData } from "../ui/expeditmodal";
 
 function Expence() {
-  const { addexpences, error } = useExpencestore();
+  const { addexpences, error,deleteExpense } = useExpencestore();
   
   const [expId, setExpId] = useState<expenceData | null>(null);
   const { user } = useAuthStore();
@@ -30,7 +30,10 @@ function Expence() {
       [name]: value,
     }));
   };
-
+  const handleDlt =(id:string)=>{
+    deleteExpense(id)
+    refetch()
+  }
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { note, amount, category, paymentMethord } = expenseData;
@@ -202,7 +205,8 @@ function Expence() {
                       <th className="border border-gray-300 px-4 py-2">
                         Payment Method
                       </th>
-                      <th>action</th>
+                      <th className="border border-gray-300 px-4 py-2">action</th>
+                      <th className="border border-gray-300 px-4 py-2">delete</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -234,6 +238,9 @@ function Expence() {
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
                           <Button onClick={()=>handleopen(expense)}>edit</Button>
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <Button onClick={()=>handleDlt(expense._id)}>edit</Button>
                         </td>
                       </tr>
                     ))}

@@ -25,6 +25,7 @@ interface budgetstate {
     error: string | null;
     isSucces: boolean;
     addBudget: (newBudget: Budget) => Promise<void>;
+    deletebudget:(id:string)=>Promise<void>
 }
 
 export const useBudgetStore = create<budgetstate>((set) => ({
@@ -44,6 +45,19 @@ export const useBudgetStore = create<budgetstate>((set) => ({
             set({ error: "therw is an error on adding budget" });
         }
     },
+    deletebudget: async(id)=>{
+        set({isSucces:false,loading:true});
+        try {
+            const res=await axiosInstance.put(`/budg/deletebudget/${id}`)
+            if (res.data) {
+                set({ isSucces: true, loading: false, error: null });
+            }
+        } catch (error) {
+            console.log(error);
+            
+            set({ error: "therw is an error on deleting budget" })
+        }
+    }
 }));
 
 export const useGetBudget = (userid: string | undefined, month: number) => {

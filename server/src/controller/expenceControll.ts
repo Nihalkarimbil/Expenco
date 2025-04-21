@@ -35,7 +35,7 @@ export const allExpences = async (
   res: Response,
   next: NextFunction
 ) => {
-  const allExpence = await Expence.find({ user: req.params.id });
+  const allExpence = await Expence.find({ user: req.params.id,isDeleted:false });
   if (!allExpence) {
     return next(new CustomError("there is no expence for you", 400));
   }
@@ -104,6 +104,7 @@ export const montlyexp = async (
   const endDate = new Date(`${year}-${monthNum}-31T23:59:59.999Z`);
 
   const expenses = await Expence.find({
+    isDeleted:false,
     user: userid,
     createdAt: { $gte: startDate, $lte: endDate },
   }).sort({ createdAt: -1 });

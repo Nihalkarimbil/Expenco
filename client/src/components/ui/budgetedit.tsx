@@ -46,14 +46,14 @@ const Budgetedit: React.FC<BudeditmodalProps> = ({ open, onClose, selectedbud })
             const res= await axiosInstance.put(`/budg/updatebudget/${user?._id}`,editable)
             console.log(res.data);
             refetch()
-            // Call your API or pass data to parent here
+            
             onClose();
         } catch (error) {
             console.log(error);
             
             
         }
-        // Close dialog after submission
+       
     };
 
     const handleCancel = () => {

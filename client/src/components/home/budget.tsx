@@ -14,7 +14,7 @@ export interface budgetdata {
 
 function Budget() {
   const { user } = useAuthStore();
-  const { addBudget } = useBudgetStore();
+  const { addBudget,deletebudget } = useBudgetStore();
   const { data: budgetsData, refetch } = useGetAllbudgets(user?._id);
   const [isOpen, setIsopen] = useState(false);
   const [Budge, setBudge] = useState<budgetdata| null>(null)
@@ -36,6 +36,11 @@ function Budget() {
       [name]: value,
     }));
   };
+
+  const handleDlt =(id:string)=>{
+    deletebudget(id)
+    refetch()
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -184,6 +189,9 @@ function Budget() {
                   <th className="px-4 py-2 text-left border border-gray-300">
                     Action
                   </th>
+                  <th className="px-4 py-2 text-left border border-gray-300">
+                    Delete
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -203,6 +211,9 @@ function Budget() {
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
                       <Button onClick={()=>handleopen(value)}>edit</Button>
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      <Button onClick={()=>handleDlt(value._id)}>delete</Button>
                     </td>
                   </tr>
                 ))}

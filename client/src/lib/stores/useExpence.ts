@@ -29,6 +29,7 @@ interface expencestate {
   Expenses: Expenses | null;
   isSucces: boolean;
   addexpences: (newExpence: Expense) => Promise<void>;
+  deleteExpense:(id :string)=>Promise<void>
 }
 
 export const useExpencestore = create<expencestate>((set) => ({
@@ -50,6 +51,18 @@ export const useExpencestore = create<expencestate>((set) => ({
       set({ error: "Adding expense failed", loading: false, isSucces: false });
     }
   },
+  deleteExpense:async(id :string)=>{
+    set({ loading: true, error: null, isSucces: false });
+    try {
+      const res= await axiosInstance.put(`/exp/deleteExp/${id}`)
+      if (res.data) {
+        set({ isSucces: true, loading: false });
+      }
+    } catch (error) {
+      console.error("Error deleting expense:", error);
+      set({ error: "deleting expense failed", loading: false, isSucces: false });
+    }
+  }
 }));
 
 export const useGetExpenses = (userid: string | undefined) => {

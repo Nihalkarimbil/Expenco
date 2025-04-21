@@ -46,6 +46,7 @@ export const getmonthlyBudget = async (
   }
 
   const budget = await Budget.findOne({
+    isDeleted:false,
     user: id,
     month: Number(month),
     year: Number(year),
