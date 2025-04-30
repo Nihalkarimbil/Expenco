@@ -22,9 +22,16 @@ interface AuthState {
   logout: () => void;
   checkAuth: () => void;
 }
+const getInitialUser = (): User | null => {
+  if (typeof window !== "undefined") {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  }
+  return null;
+};
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: JSON.parse(localStorage.getItem("user") || "null"),
+  user: getInitialUser(),
   loading: false,
   error: null,
   isSucces: false,
@@ -76,9 +83,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   checkAuth: () => {
-    const user = JSON.parse(localStorage.getItem("user") || "null");
-    if (user) {
-      set({ user, isSucces: true });
+    if (typeof window !== "undefined") {
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+      if (user) {
+        set({ user, isSucces: true });
+      }
     }
-  },
-}));
+  }
+
+}
+));

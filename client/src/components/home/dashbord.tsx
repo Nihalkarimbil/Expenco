@@ -2,7 +2,7 @@
 
 import { useAuthStore } from "@/lib/stores/useAuthstore";
 import { useGetExpenses, useGetTotalExpense } from "@/lib/stores/useExpence";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Card,
@@ -22,21 +22,25 @@ import { useGetBudget } from "@/lib/stores/useBudgetStore";
 import Link from "next/link";
 
 function Dashboard() {
-  const { user } = useAuthStore();
+  const { user ,checkAuth} = useAuthStore();
   const { data: totalamount } = useGetTotalExpense(user?._id);
   const { data: expences, isLoading } = useGetExpenses(user?._id);
   const currentMonth = new Date().getMonth() + 1;
   const { data: budgets } = useGetBudget(user?._id, currentMonth);
   console.log("budg", budgets);
+  useEffect(()=>{
+    checkAuth()
+  },[checkAuth])
 
   console.log(expences);
   if (isLoading) {
     return <div>loding</div>;
   }
 
+  
   const totalexp = totalamount && totalamount[0]?.total ? totalamount[0].total : 0;
 
-  const balance = Number(budgets?.amount) - totalexp;
+  const balance = Number(budgets?.amount)- totalexp;
 
   const processCategoryData = (): {
     id: number;
@@ -45,6 +49,7 @@ function Dashboard() {
   }[] => {
     const exp = Array(expences);
     console.log(exp);
+    
 
     const categoryTotals: { [key: string]: number } = {};
 
@@ -119,7 +124,7 @@ function Dashboard() {
                 </Typography>
                 <Typography
                   variant="body2"
-                  color={totalexp >Number(budgets.amount) / 2 ? "error.main" : "success.main"}
+                  color={totalexp > budgets.amount / 2 ? "error.main" : "success.main"}
                 >
                   {totalexp >Number(budgets.amount) / 2
                     ? "Warning: High spending"

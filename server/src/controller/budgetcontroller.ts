@@ -40,7 +40,10 @@ export const getmonthlyBudget = async (
 ): Promise<void> => {
   const { id } = req.params;
   const { month, year } = req.query;
-
+ 
+  
+  
+  
   if (!month || !year) {
     return next(new CustomError("Month and year are required", 400));
   }
@@ -51,6 +54,7 @@ export const getmonthlyBudget = async (
     month: Number(month),
     year: Number(year),
   });
+  
 
   if (!budget) {
     return next(new CustomError("No budget found for this month", 404));
