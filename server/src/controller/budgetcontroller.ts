@@ -3,6 +3,7 @@ import Budget from "../model/budget";
 import CustomError from "../utils/CustomError";
 import Expence from "../model/expence";
 import { error } from "console";
+import prisma from "../../prisma/prisma";
 
 export const addBudget = async (
   req: Request,
@@ -11,19 +12,20 @@ export const addBudget = async (
 ) => {
   console.log("sssssss", req.body);
 
-  const { user, category, amount, month, year } = req.body;
-  const existingbudget = await Budget.findOne({ month: month });
+  const { userId, category, amount, month, year } = req.body;
+  const existingbudget = await prisma.budget.findUnique({where:month});
   if (existingbudget) {
     return next(new CustomError("budget existing in this month", 400));
   } else {
-    const newBudget = new Budget({
-      user,
-      category,
-      amount,
-      month,
-      year,
-    });
-    await newBudget.save();
+      const newBudget = await prisma.budget.create({
+        data: {
+          userId,
+          category,
+          amount: parseFloat(amount), // assuming amount is a string in req.body
+          month,
+          year,
+        },
+      });
 
     res.status(201).json({
       message: "budget added for this month",

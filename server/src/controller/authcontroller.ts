@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import CustomError from "../utils/CustomError";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import prisma from "../../prisma/prisma";
 
 export const userRegister = async (
   req: Request,
@@ -15,15 +16,21 @@ export const userRegister = async (
   console.log(username);
 
   const bycripted = bcrypt.hashSync(password, 10);
-  const user = new User({ username, email, password: bycripted });
-  await user.save();
+  const user= await prisma.user.create({
+    data:{
+      username:username,
+      email:email,
+      password:bycripted
+    }
+  })
+  
   const token = jwt.sign(
-    { id: user._id, email: user.email, name: user.username },
+    { id: user.id, email: user.email, name: user.username },
     process.env.JWT_SECRET as string,
     { expiresIn: "1d" }
   );
   const refreshtoken = jwt.sign(
-    { id: user._id, email: user.email, name: user.username },
+    { id: user.id, email: user.email, name: user.username },
     process.env.JWT_SECRET as string,
     { expiresIn: "7d" }
   );
@@ -42,7 +49,7 @@ export const userLogin = async (
   const { email, password } = req.body;
   console.log(req.body);
 
-  const user = await User.findOne({ email });
+  const user = await prisma.user.findUnique({where :{email:email}});
   if (!user) {
     return next(new CustomError("Invalid credentials", 400));
   }
@@ -51,12 +58,12 @@ export const userLogin = async (
     return next(new CustomError("Invalid credentials", 400));
   }
   const token = jwt.sign(
-    { id: user._id, email: user.email, name: user.username },
+    { id: user.id, email: user.email, name: user.username },
     process.env.JWT_SECRET as string,
     { expiresIn: "1d" }
   );
   const refreshtoken = jwt.sign(
-    { id: user._id, email: user.email, name: user.username },
+    { id: user.id, email: user.email, name: user.username },
     process.env.JWT_SECRET as string,
     { expiresIn: "7d" }
   );

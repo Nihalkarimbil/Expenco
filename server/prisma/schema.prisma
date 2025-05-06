@@ -1,7 +1,5 @@
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -10,9 +8,32 @@ datasource db {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
+  id       String    @id @default(uuid())
   username String
-  email    String @unique
+  email    String    @unique
   password String
+  Expense  Expense[]
 }
 
+model Budget {
+  id        String   @id @default(uuid())
+  category  String
+  amount    Decimal  @db.Decimal(10, 2)
+  month     Int
+  year      Int
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Expense {
+  id String @id @default(uuid())
+  amount         Decimal  @db.Decimal(10, 2)
+  category       String
+  paymentMethord String
+  note           String?
+  isDeleted      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  updatedAt      DateTime @updatedAt
+}
