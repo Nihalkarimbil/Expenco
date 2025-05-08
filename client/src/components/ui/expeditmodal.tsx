@@ -61,7 +61,6 @@ const Expeditmodal: React.FC<edExpModalProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
-      console.log("Form Submitted:", formData);
       const resp = await axiosInstance.put(`/exp/editExp/${expenseId?._id}`,formData);
       console.log(resp.data);
       

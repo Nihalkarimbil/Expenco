@@ -21,7 +21,7 @@ export const addBudget = async (
         data: {
           userId,
           category,
-          amount: parseFloat(amount), // assuming amount is a string in req.body
+          amount: parseFloat(amount),
           month,
           year,
         },

@@ -40,7 +40,6 @@ const Budgetedit: React.FC<BudeditmodalProps> = ({ open, onClose, selectedbud })
     const handleSubmit = async(e:React.FormEvent) => {
         try {
             e.preventDefault();
-            console.log("Submitted Budget:", budget);
             const {amount,year,month}=budget
             const editable={amount:amount,month:month,year:year}
             const res= await axiosInstance.put(`/budg/updatebudget/${user?._id}`,editable)

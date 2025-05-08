@@ -32,7 +32,6 @@ function Dashboard() {
     checkAuth()
   },[checkAuth])
 
-  console.log(expences);
   if (isLoading) {
     return <div>loding</div>;
   }
@@ -48,14 +47,13 @@ function Dashboard() {
     value: number;
   }[] => {
     const exp = Array(expences);
-    console.log(exp);
-    
-
+   console.log(exp);
+   
     const categoryTotals: { [key: string]: number } = {};
 
     expences.forEach((expense: Expenses) => {
       const category = expense.category;
-      console.log(category);
+     
 
       if (!categoryTotals[category]) {
         categoryTotals[category] = 0;
@@ -63,7 +61,6 @@ function Dashboard() {
 
       categoryTotals[category] += expense.amount || 0;
     });
-    console.log(categoryTotals);
 
     return Object.entries(categoryTotals).map(([label, value], id) => ({
       id,
