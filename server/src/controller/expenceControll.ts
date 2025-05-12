@@ -2,27 +2,30 @@ import { NextFunction, Request, Response } from "express";
 import Expence from "../model/expence";
 import CustomError from "../utils/CustomError";
 import mongoose from "mongoose";
+import prisma from "../../prisma/prisma";
 
 export const addExpence = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const { user, amount, category, paymentMethord, note } = req.body;
-  console.log(req.body);
+  const { userId, amount, category, paymentMethord, note } = req.body;
+
 
   if (!amount || !category || !paymentMethord) {
     return next(new CustomError("all are requires", 400));
   }
-  const newExpence = new Expence({
-    user,
-    amount,
-    category,
-    paymentMethord,
-    note,
+  const newExpence = prisma.expense.create({
+    data : {
+      userId,
+      amount,
+      category,
+      paymentMethord,
+      note,
+    },
   });
 
-  await newExpence.save();
+
   res.status(201).json({
     data: newExpence,
     message: "Expence added",
@@ -35,7 +38,9 @@ export const allExpences = async (
   res: Response,
   next: NextFunction
 ) => {
-  const allExpence = await Expence.find({ user: req.params.id,isDeleted:false });
+  const allExpence = await prisma.expense.findMany({
+    where: { userId: req.params.id, isDeleted: false },
+  });
   if (!allExpence) {
     return next(new CustomError("there is no expence for you", 400));
   }

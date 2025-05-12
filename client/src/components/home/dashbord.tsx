@@ -47,8 +47,7 @@ function Dashboard() {
     value: number;
   }[] => {
     const exp = Array(expences);
-   console.log(exp);
-   
+  
     const categoryTotals: { [key: string]: number } = {};
 
     expences.forEach((expense: Expenses) => {

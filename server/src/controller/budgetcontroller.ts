@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import Budget from "../model/budget";
 import CustomError from "../utils/CustomError";
 import Expence from "../model/expence";
-import { error } from "console";
+
 import prisma from "../../prisma/prisma";
 
 export const addBudget = async (

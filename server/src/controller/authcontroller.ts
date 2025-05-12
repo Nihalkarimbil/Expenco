@@ -1,4 +1,4 @@
-import User from "../model/user";
+
 import { Request, Response, NextFunction } from "express";
 import CustomError from "../utils/CustomError";
 import jwt from "jsonwebtoken";
