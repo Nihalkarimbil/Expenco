@@ -20,12 +20,13 @@ model Budget {
   id        String   @id @default(uuid())
   category  String
   amount    Decimal  @db.Decimal(10, 2)
-  month     Int
+  month     Int     
   year      Int
   isDeleted Boolean  @default(false)
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   userId    String
+   @@unique([userId, month, year]) 
 }
 
 model Expense {

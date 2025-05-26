@@ -23,10 +23,14 @@ import Link from "next/link";
 
 function Dashboard() {
   const { user ,checkAuth} = useAuthStore();
-  const { data: totalamount } = useGetTotalExpense(user?._id);
-  const { data: expences, isLoading } = useGetExpenses(user?._id);
+  const { data: totalamount } = useGetTotalExpense(user?.id);
+  console.log("tot", totalamount?._sum?.amount);
+  
+  const { data: expences, isLoading } = useGetExpenses(user?.id);
+  console.log("vvvv",expences);
+  
   const currentMonth = new Date().getMonth() + 1;
-  const { data: budgets } = useGetBudget(user?._id, currentMonth);
+  const { data: budgets } = useGetBudget(user?.id, currentMonth);
   console.log("budg", budgets);
   useEffect(()=>{
     checkAuth()
@@ -37,7 +41,7 @@ function Dashboard() {
   }
 
   
-  const totalexp = totalamount && totalamount[0]?.total ? totalamount[0].total : 0;
+  const totalexp =totalamount?._sum?.amount | 0;
 
   const balance = Number(budgets?.amount)- totalexp;
 
@@ -120,9 +124,9 @@ function Dashboard() {
                 </Typography>
                 <Typography
                   variant="body2"
-                  color={totalexp > budgets.amount / 2 ? "error.main" : "success.main"}
+                  color={totalexp > budgets?.amount||0 / 2 ? "error.main" : "success.main"}
                 >
-                  {totalexp >Number(budgets.amount) / 2
+                  {totalexp >Number(budgets?.amount||0) / 2
                     ? "Warning: High spending"
                     : "Spending on track"}
                 </Typography>
@@ -215,7 +219,7 @@ function Dashboard() {
                 >
                   {balance < 0
                     ? "Budget exceeded!"
-                    : `${((balance / Number(budgets.amount)) * 100).toFixed(0)}% remaining`}
+                    : `${((balance / Number(budgets?.amount)) * 100).toFixed(0)}% remaining`}
                 </Typography>
               </CardContent>
             </Card>

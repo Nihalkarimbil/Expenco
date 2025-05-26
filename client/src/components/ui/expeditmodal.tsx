@@ -10,13 +10,15 @@ export interface expenseData {
   amount: number;
   category: string;
   paymentMethord: string;
+  user:string|undefined
 }
 export interface expenceData {
-    _id: string|null;
+    id: string|null;
     note: string;
     amount: number;
     category: string;
     paymentMethord: string;
+    user:string|undefined
   }
 
 interface edExpModalProps {
@@ -32,14 +34,17 @@ const Expeditmodal: React.FC<edExpModalProps> = ({
 }) => {
 
     const { user } = useAuthStore();
-    const {  refetch } = useGetExpenses(user?._id);
-  console.log(expenseId?._id);
+    console.log(user);
+    
+    const {  refetch } = useGetExpenses(user?.id);
+  console.log(expenseId?.id);
 
   const [formData, setFormData] = useState<expenseData>({
     amount: 0,
     note: "",
     category: "",
     paymentMethord: "",
+    user:user?.id
   });
 
   useEffect(() => {
@@ -60,8 +65,10 @@ const Expeditmodal: React.FC<edExpModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     try {
+      console.log(formData);
+      
       e.preventDefault();
-      const resp = await axiosInstance.put(`/exp/editExp/${expenseId?._id}`,formData);
+      const resp = await axiosInstance.put(`/exp/editExp/${expenseId?.id}`,formData);
       console.log(resp.data);
       
       onClose();

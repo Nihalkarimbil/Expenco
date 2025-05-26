@@ -41,6 +41,8 @@ export const useExpencestore = create<expencestate>((set) => ({
 
   addexpences: async (newExpence: Expense) => {
     set({ loading: true, error: null, isSucces: false });
+    console.log(newExpence);
+    
     try {
       const response = await axiosInstance.post("/exp/addExpence", newExpence);
       if (response.data) {
@@ -66,6 +68,8 @@ export const useExpencestore = create<expencestate>((set) => ({
 }));
 
 export const useGetExpenses = (userid: string | undefined) => {
+  console.log(userid);
+  
   return useQuery({
     queryKey: ["expenses"],
     queryFn: async () => {

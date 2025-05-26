@@ -15,7 +15,7 @@ const Budgetedit: React.FC<BudeditmodalProps> = ({ open, onClose, selectedbud })
 
     const {user}=useAuthStore()
     
-      const { refetch } = useGetAllbudgets(user?._id);
+      const { refetch } = useGetAllbudgets(user?.id);
     const [budget, setBudget] = useState<budgetdata>({
         amount: 0,
         category: "",
@@ -42,7 +42,7 @@ const Budgetedit: React.FC<BudeditmodalProps> = ({ open, onClose, selectedbud })
             e.preventDefault();
             const {amount,year,month}=budget
             const editable={amount:amount,month:month,year:year}
-            const res= await axiosInstance.put(`/budg/updatebudget/${user?._id}`,editable)
+            const res= await axiosInstance.put(`/budg/updatebudget/${user?.id}`,editable)
             console.log(res.data);
             refetch()
             

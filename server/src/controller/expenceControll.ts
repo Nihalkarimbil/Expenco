@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import Expence from "../model/expence";
 import CustomError from "../utils/CustomError";
-import mongoose from "mongoose";
+
 import prisma from "../../prisma/prisma";
 
 export const addExpence = async (
@@ -9,22 +8,25 @@ export const addExpence = async (
   res: Response,
   next: NextFunction
 ) => {
-  const { userId, amount, category, paymentMethord, note } = req.body;
-
+  const { user, amount, category, paymentMethord, note } = req.body;
+  console.log(req.body);
 
   if (!amount || !category || !paymentMethord) {
     return next(new CustomError("all are requires", 400));
   }
-  const newExpence = prisma.expense.create({
-    data : {
-      userId,
+  const newExpence = await prisma.expense.create({
+    data: {
+      user: {
+        connect: {
+          id: user,
+        },
+      },
       amount,
       category,
       paymentMethord,
       note,
     },
   });
-
 
   res.status(201).json({
     data: newExpence,
@@ -38,9 +40,14 @@ export const allExpences = async (
   res: Response,
   next: NextFunction
 ) => {
+  console.log(req.params);
+
   const allExpence = await prisma.expense.findMany({
     where: { userId: req.params.id, isDeleted: false },
   });
+
+  console.log(allExpence);
+
   if (!allExpence) {
     return next(new CustomError("there is no expence for you", 400));
   }
@@ -58,10 +65,17 @@ export const updateExpence = async (
   next: NextFunction
 ) => {
   const { user, amount, category, paymentMethord, note } = req.body;
+  console.log(user);
+  console.log(req.params);
 
-  const updatedata = { user, amount, category, paymentMethord, note };
-  const updated = await Expence.findByIdAndUpdate(req.params.id, updatedata, {
-    new: true,
+  const updated = await prisma.expense.update({
+    where: { id: req.params.id },
+    data: {
+      amount,
+      category,
+      paymentMethord,
+      note,
+    },
   });
 
   if (!updated) {
@@ -80,11 +94,12 @@ export const deletexp = async (
   res: Response,
   next: NextFunction
 ) => {
-  const deleteExpense = await Expence.findByIdAndUpdate(
-    req.params.id,
-    { isDeleted: true },
-    { new: true }
-  );
+  const deleteExpense = await prisma.expense.update({
+    where: { id: req.params.id },
+    data: { isDeleted: true },
+  });
+  console.log(deleteExpense);
+
   if (!deleteExpense) {
     return next(new CustomError("cannot delete this exp", 400));
   }
@@ -107,12 +122,19 @@ export const montlyexp = async (
   const monthNum = month.padStart(2, "0");
   const startDate = new Date(`${year}-${monthNum}-01T00:00:00.000Z`);
   const endDate = new Date(`${year}-${monthNum}-31T23:59:59.999Z`);
-
-  const expenses = await Expence.find({
-    isDeleted:false,
-    user: userid,
-    createdAt: { $gte: startDate, $lte: endDate },
-  }).sort({ createdAt: -1 });
+  const expenses = await prisma.expense.findMany({
+    where: {
+      isDeleted: false,
+      user: userid,
+      createdAt: {
+        gte: startDate,
+        lte: endDate,
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
 
   if (!expenses) {
     return next(new CustomError("error of getting exp", 400));
@@ -121,37 +143,13 @@ export const montlyexp = async (
   res.status(200).json({ error: false, data: expenses });
 };
 
-export const totalexp = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
-  const userId = req.params.id;
-  const totalExpense = await Expence.aggregate([
-    { $match: { user: new mongoose.Types.ObjectId(userId), isDeleted: false } },
-    { $group: { _id: null, total: { $sum: "$amount" } } },
-  ]);
-  if (!totalExpense) {
-    return next(new CustomError("error on agregate", 400));
-  }
-
-  res.status(200).json({
-    data: totalExpense,
-    error: false,
-    message: "total expence",
-  });
-};
-
 export const getExpbyid = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  
-
-  const expence = await Expence.findOne({
-    _id:req.params.id,
-    isDeleted: false,
+  const expence = await prisma.expense.findUnique({
+    where: { id: req.params.id, isDeleted: false },
   });
   if (!expence) {
     return next(new CustomError("no expenses found with this id", 404));
@@ -160,5 +158,30 @@ export const getExpbyid = async (
     message: "expence by id",
     data: expence,
     error: false,
+  });
+};
+export const totalexp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const userId = req.params.id;
+  const totalExpense = await prisma.expense.aggregate({
+    _sum:{
+      amount:true
+    },
+    where:{
+      userId:userId,
+      isDeleted:false
+    }
+  });
+  if (!totalExpense) {
+    return next(new CustomError("error on agregate", 400));
+  }
+
+  res.status(200).json({
+    data: totalExpense,
+    error: false,
+    message: "total expence",
   });
 };

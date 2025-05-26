@@ -15,13 +15,14 @@ function Sidebar() {
 
   const navItems = [
     { id: "dashboard", label: "Dashboard", icon: "grid", path: "/dashbord" },
+
+    { id: "budget", label: "Budget", icon: "pie-chart", path: "/budget" },
     {
       id: "expenses",
       label: "Expenses",
       icon: "dollar-sign",
       path: "/expence",
     },
-    { id: "budget", label: "Budget", icon: "pie-chart", path: "/budget" },
     { id: "reports", label: "Reports", icon: "bar-chart-2", path: "/report" },
   ];
 

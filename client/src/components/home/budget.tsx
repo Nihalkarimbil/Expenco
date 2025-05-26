@@ -1,6 +1,6 @@
 "use client";
 import { Button, TextField } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAuthStore } from "@/lib/stores/useAuthstore";
 import { useBudgetStore, useGetAllbudgets } from "@/lib/stores/useBudgetStore";
 import { Budgets as BudgetType } from "@/lib/stores/useBudgetStore";
@@ -13,9 +13,12 @@ export interface budgetdata {
 }
 
 function Budget() {
+
   const { user } = useAuthStore();
   const { addBudget,deletebudget } = useBudgetStore();
-  const { data: budgetsData, refetch } = useGetAllbudgets(user?._id);
+  const { data: budgetsData, refetch } = useGetAllbudgets(user?.id);
+  console.log(budgetsData);
+  
   const [isOpen, setIsopen] = useState(false);
   const [Budge, setBudge] = useState<budgetdata| null>(null)
   const [Budjet, setBudgetData] = useState({
@@ -29,6 +32,9 @@ function Budget() {
     setBudge(budget)
   };
 
+  useEffect(()=>{
+    refetch()
+  })
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setBudgetData((prevData) => ({
@@ -37,16 +43,24 @@ function Budget() {
     }));
   };
 
-  const handleDlt =(id:string)=>{
-    deletebudget(id)
-    refetch()
+  const handleDlt =async(id:string)=>{
+    console.log(id);
+    
+    try {
+      await deletebudget(id);
+      refetch();
+    } catch (error) {
+      console.log(error);
+      
+    }
+    
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { amount, category, month, year } = Budjet;
     await addBudget({
-      user: user?._id ?? null,
+      user: user?.id ?? null,
       amount,
       category,
       month,
@@ -213,7 +227,7 @@ function Budget() {
                       <Button onClick={()=>handleopen(value)}>edit</Button>
                     </td>
                     <td className="border border-gray-300 px-4 py-2">
-                      <Button onClick={()=>handleDlt(value._id)}>delete</Button>
+                      <Button onClick={()=>handleDlt(value.id)}>delete</Button>
                     </td>
                   </tr>
                 ))}

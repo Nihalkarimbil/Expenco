@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { create } from "zustand";
 
 export interface Budgets {
+    id: string;
     _id: string;
     user: string | null;
     amount: number;

@@ -10,7 +10,7 @@ function Expence() {
   
   const [expId, setExpId] = useState<expenceData | null>(null);
   const { user } = useAuthStore();
-  const { data: expenses, refetch } = useGetExpenses(user?._id);
+  const { data: expenses, refetch } = useGetExpenses(user?.id);
   const [isOpen,setIsopen]=useState(false)
   const [expenseData, setExpenseData] = useState({
     note: "",
@@ -42,7 +42,7 @@ function Expence() {
       amount,
       category,
       paymentMethord,
-      user: user?._id ?? null,
+      user: user?.id ?? null,
     });
 
     setTimeout(() => {
@@ -240,7 +240,7 @@ function Expence() {
                           <Button onClick={()=>handleopen(expense)}>edit</Button>
                         </td>
                         <td className="border border-gray-300 px-4 py-2">
-                          <Button onClick={()=>handleDlt(expense._id)}>edit</Button>
+                          <Button onClick={()=>handleDlt(expense.id)}>delete</Button>
                         </td>
                       </tr>
                     ))}

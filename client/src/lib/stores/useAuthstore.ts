@@ -3,7 +3,7 @@ import { create } from "zustand";
 import Cookies from "js-cookie";
 
 export interface User {
-  _id: string;
+  id: string;
   username?: string;
   email: string;
   password: string;
@@ -63,7 +63,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       const { user, token, refreshtoken } = response.data.data;
       Cookies.set("token", token);
       Cookies.set("refreshtoken", refreshtoken);
-      localStorage.setItem("user", JSON.stringify(user)); // Persist user
+      localStorage.setItem("user", JSON.stringify(user)); 
       set({ user, loading: false, isSucces: true });
     } catch (error) {
       console.error("Error logging in:", error);
