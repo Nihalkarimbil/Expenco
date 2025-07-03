@@ -16,6 +16,7 @@ export const addBudget = async (
   const month = parseInt(req.body.month);
   const existingBudget = await prisma.budget.findFirst({
     where: {
+      isDeleted:false,
       userId: user,
       month,
       year,
@@ -27,11 +28,12 @@ export const addBudget = async (
       new CustomError("Budget already exists for this user/month/year", 400)
     );
   }
- 
+
 
   const newBudget = await prisma.budget.create({
     data: {
       user: { connect: { id: user } },
+      isDeleted:false,
       category,
       amount: parseFloat(amount),
       month,
@@ -52,7 +54,11 @@ export const getmonthlyBudget = async (
   next: NextFunction
 ): Promise<void> => {
   const { id } = req.params;
+  console.log(id);
+  
   const { month, year } = req.query;
+  console.log(month,year);
+  
 
   if (!month || !year) {
     return next(new CustomError("Month and year are required", 400));

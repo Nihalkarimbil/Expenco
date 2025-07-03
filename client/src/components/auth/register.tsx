@@ -30,9 +30,9 @@ function Register() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { username, email, password } = values;
-    await registeruser({ _id: "", username, email, password });
+    await registeruser({ id: "", username, email, password });
     resetForm()
-    navigate.push("/home")
+    navigate.push("/login");
   };
 
   return (

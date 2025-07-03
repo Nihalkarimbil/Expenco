@@ -1,10 +1,11 @@
+"use client";
 import axiosInstance from "@/services/api";
 import { create } from "zustand";
 import Cookies from "js-cookie";
 
 export interface User {
   id: string;
-  username?: string;
+  username?: string | undefined;
   email: string;
   password: string;
 }
@@ -61,9 +62,11 @@ export const useAuthStore = create<AuthState>((set) => ({
         password,
       });
       const { user, token, refreshtoken } = response.data.data;
+      console.log("idius", token);
+
       Cookies.set("token", token);
       Cookies.set("refreshtoken", refreshtoken);
-      localStorage.setItem("user", JSON.stringify(user)); 
+      localStorage.setItem("user", JSON.stringify(user));
       set({ user, loading: false, isSucces: true });
     } catch (error) {
       console.error("Error logging in:", error);
@@ -89,7 +92,5 @@ export const useAuthStore = create<AuthState>((set) => ({
         set({ user, isSucces: true });
       }
     }
-  }
-
-}
-));
+  },
+}));

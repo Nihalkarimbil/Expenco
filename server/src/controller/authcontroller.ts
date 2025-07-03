@@ -27,7 +27,7 @@ export const userRegister = async (
   const token = jwt.sign(
     { id: user.id, email: user.email, name: user.username },
     process.env.JWT_SECRET as string,
-    { expiresIn: "1d" }
+    { expiresIn: "7d" }
   );
   const refreshtoken = jwt.sign(
     { id: user.id, email: user.email, name: user.username },
@@ -60,7 +60,7 @@ export const userLogin = async (
   const token = jwt.sign(
     { id: user.id, email: user.email, name: user.username },
     process.env.JWT_SECRET as string,
-    { expiresIn: "1d" }
+    { expiresIn: "7d" }
   );
   const refreshtoken = jwt.sign(
     { id: user.id, email: user.email, name: user.username },
