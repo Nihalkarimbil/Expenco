@@ -1,16 +1,12 @@
 import { Button, Dialog, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { budgetdata } from "../home/budget";
+
 import axiosInstance from "@/services/api";
 import { useAuthStore } from "@/lib/stores/useAuthstore";
 import { useGetAllbudgets } from "@/lib/stores/useBudgetStore";
+import { BudeditmodalProps, budgetdata } from "@/lib/types";
 
-interface BudeditmodalProps {
-    open: boolean;
-    onClose: () => void;
-    selectedbud: budgetdata | null
 
-}
 const Budgetedit: React.FC<BudeditmodalProps> = ({ open, onClose, selectedbud }) => {
 
     const {user}=useAuthStore()

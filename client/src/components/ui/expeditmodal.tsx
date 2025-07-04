@@ -1,31 +1,11 @@
 import { useAuthStore } from "@/lib/stores/useAuthstore";
 import { useGetExpenses } from "@/lib/stores/useExpence";
+import { edExpModalProps, expenseData } from "@/lib/types";
 import axiosInstance from "@/services/api";
 import { Button, Dialog, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
-export interface expenseData {
 
-  note: string;
-  amount: number;
-  category: string;
-  paymentMethord: string;
-  user:string|undefined
-}
-export interface expenceData {
-    id: string|null;
-    note: string;
-    amount: number;
-    category: string;
-    paymentMethord: string;
-    user:string|undefined
-  }
-
-interface edExpModalProps {
-  open: boolean;
-  onClose: () => void;
-  expenseId: expenceData | null;
-}
 
 const Expeditmodal: React.FC<edExpModalProps> = ({
   onClose,

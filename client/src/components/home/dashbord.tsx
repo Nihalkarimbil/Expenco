@@ -24,16 +24,9 @@ import {
   Target,
   AlertTriangle,
 } from "lucide-react";
+import { StatCardProps } from "@/lib/types";
 
-interface StatCardProps {
-  title: string;
-  value: string;
-  subtitle: string;
-  icon: React.ComponentType<{ className?: string }>;
-  color: string;
-  delay?: number;
-  trend?: number | null;
-}
+
 
 function Dashboard() {
   const { user, checkAuth } = useAuthStore();

@@ -2,27 +2,9 @@
 import axiosInstance from "@/services/api";
 import { create } from "zustand";
 import Cookies from "js-cookie";
+import { AuthState, User } from "../types";
 
-export interface User {
-  id: string;
-  username?: string | undefined;
-  email: string;
-  password: string;
-}
 
-interface AuthState {
-  user: User | null;
-  loading: boolean;
-  error: string | null;
-  isSucces: boolean;
-  registeruser: (newuser: User) => Promise<void>;
-  loginUser: (credentials: {
-    email: string;
-    password: string;
-  }) => Promise<void>;
-  logout: () => void;
-  checkAuth: () => void;
-}
 const getInitialUser = (): User | null => {
   if (typeof window !== "undefined") {
     const storedUser = localStorage.getItem("user");
@@ -83,6 +65,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     Cookies.remove("refreshtoken");
     localStorage.removeItem("user");
     set({ user: null, isSucces: false });
+
   },
 
   checkAuth: () => {

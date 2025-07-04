@@ -1,33 +1,9 @@
 import axiosInstance from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { create } from "zustand";
+import { Budget, budgetstate } from "../types";
 
-export interface Budgets {
-    id: string;
-    _id: string;
-    user: string | null;
-    amount: number;
-    category: string;
-    month: number;
-    year: number;
-    isDeleted:boolean
-}
-interface Budget {
-    user: string | null;
-    amount: number;
-    category: string;
-    month: number;
-    year: number;
-}
 
-interface budgetstate {
-    budget: Budget | null;
-    loading: boolean;
-    error: string | null;
-    isSucces: boolean;
-    addBudget: (newBudget: Budget) => Promise<void>;
-    deletebudget:(id:string)=>Promise<void>
-}
 
 export const useBudgetStore = create<budgetstate>((set) => ({
     budget: null,

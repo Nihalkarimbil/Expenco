@@ -6,6 +6,7 @@ import { userSchema } from "@/lib/schema/validation";
 import { useAuthStore } from "@/lib/stores/useAuthstore";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 const initialValues = {
   username: "",
@@ -28,11 +29,18 @@ function Register() {
     },
   });
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const { username, email, password } = values;
-    await registeruser({ id: "", username, email, password });
-    resetForm()
-    navigate.push("/login");
+    try {
+      e.preventDefault();
+      const { username, email, password } = values;
+      await registeruser({ id: "", username, email, password });
+      resetForm();
+      toast.success(`welcome ${username}`);
+      navigate.push("/dashbord");
+    } catch (error) {
+      console.log(error);
+      
+    }
+ 
   };
 
   return (
@@ -126,15 +134,16 @@ function Register() {
             className={`w-full text-white font-bold py-2 px-4 rounded mt-2 ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-600"
+                : "bg-gradient-to-br from-blue-500 to-purple-600"
             }`}
           >
             {loading ? "Submitting..." : "Submit"}
           </button>
           <Link href={"/login"}>
-         
-         <h1 className="text-center mt-3 text-blue-400">you have an account login!</h1>
-         </Link>
+            <h1 className="text-center mt-3 text-blue-400">
+              you have an account login!
+            </h1>
+          </Link>
         </form>
 
         {error && <div className="text-red-500 text-sm mt-3">{error}</div>}

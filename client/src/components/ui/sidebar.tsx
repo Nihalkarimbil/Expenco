@@ -13,7 +13,7 @@ function Sidebar() {
   // Determine active item based on current pathname
   const getActiveItem = () => {
     if (pathname.includes("/budget")) return "budget";
-    if (pathname.includes("/expenses")) return "expenses";
+    if (pathname.includes("/expence")) return "expenses";
     return "dashboard";
   };
 

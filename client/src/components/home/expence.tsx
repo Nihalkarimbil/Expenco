@@ -3,7 +3,9 @@ import { Button, TextField } from "@mui/material";
 import React, { useState } from "react";
 import { useExpencestore, useGetExpenses } from "@/lib/stores/useExpence";
 import { useAuthStore } from "@/lib/stores/useAuthstore";
-import Expeditmodal, { expenceData } from "../ui/expeditmodal";
+import Expeditmodal from "../ui/expeditmodal";
+import toast from "react-hot-toast";
+import { expenceData } from "@/lib/types";
 
 function Expence() {
   const { addexpences, error,deleteExpense } = useExpencestore();
@@ -47,7 +49,7 @@ function Expence() {
 
     setTimeout(() => {
       if (useExpencestore.getState().isSucces) {
-        alert("Expense added successfully");
+        toast.success("Expense added successfully");
         setExpenseData({
           note: "",
           amount: 0,
@@ -62,7 +64,7 @@ function Expence() {
 
   return (
     <div>
-      <div className="bg-blue-50 p-10 rounded-3xl h-[600px] overflow-auto scrollbar-none">
+      <div className="bg-gradient-to-r from-blue-200 to-purple-400 text-white shadow-lg p-10 rounded-3xl h-[600px] overflow-auto scrollbar-none">
         <div className="flex justify-between mx-auto px-2">
           <h1 className="text-2xl font-bold text-blue-500">Expenses</h1>
           <Button variant="contained" color="primary">
@@ -180,8 +182,7 @@ function Expence() {
           {error && <h1 className="text-red-400">{error}</h1>}
         </div>
 
- 
-        <div className="bg-white mt-10 p-10 rounded-xl shadow-sm">
+        <div className=" mt-10 p-10 rounded-xl shadow-sm">
           <h2 className="text-xl font-semibold mb-6 text-blue-400">
             Recent Expenses
           </h2>
@@ -193,26 +194,34 @@ function Expence() {
               <div className="overflow-x-auto">
                 <table className="min-w-full border-collapse border border-gray-300">
                   <thead>
-                    <tr className="bg-gray-100">
-                      <th className="border border-gray-300 px-4 py-2">Date</th>
-                      <th className="border border-gray-300 px-4 py-2">
+                    <tr className="bg-blue-400">
+                      <th className="border border-black text-black px-4 py-2">
+                        Date
+                      </th>
+                      <th className="border border-black text-black px-4 py-2">
                         Category
                       </th>
-                      <th className="border border-gray-300 px-4 py-2">Note</th>
-                      <th className="border border-gray-300 px-4 py-2">
+                      <th className="border border-black text-black px-4 py-2">
+                        Note
+                      </th>
+                      <th className="border border-black text-black px-4 py-2">
                         Amount
                       </th>
-                      <th className="border border-gray-300 px-4 py-2">
+                      <th className="border border-black text-black px-4 py-2">
                         Payment Method
                       </th>
-                      <th className="border border-gray-300 px-4 py-2">action</th>
-                      <th className="border border-gray-300 px-4 py-2">delete</th>
+                      <th className="border border-black text-black px-4 py-2">
+                        action
+                      </th>
+                      <th className="border border-black text-black px-4 py-2">
+                        delete
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {expenses.map((expense, index) => (
                       <tr key={index} className="text-center">
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border text-black border-black px-4 py-2">
                           {expense.createdAt
                             ? new Date(expense.createdAt).toLocaleDateString(
                                 "en-US",
@@ -224,23 +233,27 @@ function Expence() {
                               )
                             : "N/A"}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border text-black border-black px-4 py-2">
                           {expense.category}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border text-black border-black px-4 py-2">
                           {expense.note}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border text-black border-black px-4 py-2">
                           ${expense.amount}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
+                        <td className="border text-black border-black px-4 py-2">
                           {expense.paymentMethord}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          <Button onClick={()=>handleopen(expense)}>edit</Button>
+                        <td className="border text-black border-black px-4 py-2">
+                          <Button onClick={() => handleopen(expense)}>
+                            edit
+                          </Button>
                         </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          <Button onClick={()=>handleDlt(expense.id)}>delete</Button>
+                        <td className="border text-black border-black px-4 py-2">
+                          <Button onClick={() => handleDlt(expense.id)}>
+                            delete
+                          </Button>
                         </td>
                       </tr>
                     ))}
@@ -251,10 +264,11 @@ function Expence() {
           )}
         </div>
       </div>
-      <Expeditmodal  open={isOpen}
+      <Expeditmodal
+        open={isOpen}
         onClose={() => setIsopen(false)}
         expenseId={expId}
-        />
+      />
     </div>
   );
 }

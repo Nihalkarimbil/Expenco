@@ -6,6 +6,7 @@ import { loginSchema } from "@/lib/schema/validation";
 import { useAuthStore } from "@/lib/stores/useAuthstore";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 const initialValues = {
   email: "",
@@ -13,7 +14,7 @@ const initialValues = {
 };
 
 function Login() {
-  const { loginUser, loading, error, isSucces } = useAuthStore();
+  const { loginUser, loading, error } = useAuthStore();
   const navigate = useRouter();
   const { errors, handleChange, values, touched, handleBlur, resetForm } =
     useFormik({
@@ -27,9 +28,9 @@ function Login() {
     const { email, password } = values;
     await loginUser({ email, password });
     resetForm();
-    if (isSucces) {
-      navigate.push("/dashboard");
-    }
+    toast.success(`welcome user`);
+
+    navigate.push("/dashbord");
   };
 
   return (
@@ -81,17 +82,18 @@ function Login() {
             className={`w-full text-white font-bold py-2 px-4 rounded mt-2 ${
               loading
                 ? "bg-gray-400 cursor-not-allowed"
-                : "bg-blue-500 hover:bg-blue-600"
+                : "bg-gradient-to-br from-blue-500 to-purple-600"
             }`}
           >
             {loading ? "Logging in..." : "Login"}
           </button>
           <Link href={"/register"}>
-         
-          <h1 className="text-center mt-3 text-blue-400">you dont have an account create it!</h1>
+            <h1 className="text-center mt-3 text-blue-400">
+              you dont have an account create it!
+            </h1>
           </Link>
         </form>
-          
+
         {error && <div className="text-red-500 text-sm mt-3">{error}</div>}
       </div>
     </div>

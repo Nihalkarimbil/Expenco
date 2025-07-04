@@ -3,14 +3,11 @@ import { Button, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useAuthStore } from "@/lib/stores/useAuthstore";
 import { useBudgetStore, useGetAllbudgets } from "@/lib/stores/useBudgetStore";
-import { Budgets as BudgetType } from "@/lib/stores/useBudgetStore";
+import { Budget as BudgetType } from "../../lib/types";
 import Budgetedit from "../ui/budgetedit";
-export interface budgetdata {
-  category: string;
-  amount: number;
-  month: number;
-  year: number;
-}
+import toast from "react-hot-toast";
+import { budgetdata } from "@/lib/types";
+
 
 function Budget() {
 
@@ -60,6 +57,7 @@ function Budget() {
     e.preventDefault();
     const { amount, category, month, year } = Budjet;
     await addBudget({
+      id:"",
       user: user?.id ?? null,
       amount,
       category,
@@ -69,7 +67,7 @@ function Budget() {
 
     setTimeout(() => {
       if (useBudgetStore.getState().isSucces) {
-        alert("Expense added successfully");
+        toast.success("Expense added successfully");
         setBudgetData({
           category: "",
           amount: 0,
@@ -98,7 +96,7 @@ function Budget() {
 
   return (
     <div>
-      <div className="bg-blue-50 p-10 rounded-3xl h-[600px] overflow-auto scrollbar-none">
+      <div className="bg-gradient-to-r from-blue-200 to-purple-400 text-white shadow-lg p-10 rounded-3xl h-[600px] overflow-auto scrollbar-none">
         <div className="flex justify-between mx-auto px-2">
           <h1 className="text-2xl font-bold text-blue-500">Monthly Budget</h1>
           <Button variant="contained" color="primary">
@@ -178,7 +176,7 @@ function Budget() {
             </div>
           </form>
         </div>
-        <div className="mt-10">
+        <div className=" mt-10 p-10 rounded-xl shadow-sm">
           <h2 className="text-xl font-bold text-gray-700 mb-4">
             My Monthly Budgets
           </h2>
@@ -186,24 +184,24 @@ function Budget() {
             <div>No Budget available</div>
           ) : (
             <table className="w-full mt-4 border border-gray-200 text-sm">
-              <thead className="bg-blue-100">
+              <thead className="bg-blue-400">
                 <tr>
-                  <th className="px-4 py-2 text-left border border-gray-300">
+                  <th className="px-4 py-2 text-left border text-black border-black">
                     Month
                   </th>
-                  <th className="px-4 py-2 text-left border border-gray-300">
+                  <th className="px-4 py-2 text-left border text-black border-black">
                     Year
                   </th>
-                  <th className="px-4 py-2 text-left border border-gray-300">
+                  <th className="px-4 py-2 text-left border text-black border-black">
                     Category
                   </th>
-                  <th className="px-4 py-2 text-left border border-gray-300">
+                  <th className="px-4 py-2 text-left border text-black border-black">
                     Amount
                   </th>
-                  <th className="px-4 py-2 text-left border border-gray-300">
+                  <th className="px-4 py-2 text-left border text-black border-black">
                     Action
                   </th>
-                  <th className="px-4 py-2 text-left border border-gray-300">
+                  <th className="px-4 py-2 text-left border text-black border-black">
                     Delete
                   </th>
                 </tr>
@@ -211,23 +209,25 @@ function Budget() {
               <tbody>
                 {budgetsData?.map((value: BudgetType, index: number) => (
                   <tr key={index} className="border-t">
-                    <td className="border border-gray-300 px-4 py-2">
-                      {monthNames[value.month - 1]}
+                    <td className="border text-black border-black px-4 py-2">
+                      {monthNames[value.month]}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border text-black border-black px-4 py-2">
                       {value.year}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border text-black border-black px-4 py-2">
                       {value.category}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
+                    <td className="border text-black border-black px-4 py-2">
                       ${value.amount}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      <Button onClick={()=>handleopen(value)}>edit</Button>
+                    <td className="border text-black border-black px-4 py-2">
+                      <Button onClick={() => handleopen(value)}>edit</Button>
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      <Button onClick={()=>handleDlt(value.id)}>delete</Button>
+                    <td className="border text-black border-black px-4 py-2">
+                      <Button onClick={() => handleDlt(value.id)}>
+                        delete
+                      </Button>
                     </td>
                   </tr>
                 ))}
@@ -236,7 +236,11 @@ function Budget() {
           )}
         </div>
       </div>
-      <Budgetedit open={isOpen} onClose={() => setIsopen(false) } selectedbud={Budge}/>
+      <Budgetedit
+        open={isOpen}
+        onClose={() => setIsopen(false)}
+        selectedbud={Budge}
+      />
     </div>
   );
 }
